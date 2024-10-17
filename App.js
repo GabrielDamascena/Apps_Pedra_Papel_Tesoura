@@ -1,53 +1,56 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Button, Image } from 'react-native';
 
-const App = () => {
-  const [alcoholPrice, setAlcoholPrice] = useState('');
-  const [gasolinePrice, setGasolinePrice] = useState('');
-  const [result, setResult] = useState('');
+export default function App() {
+  // Estado Inicial: Define três estados usando useState:
+  // peso e altura para armazenar os valores de entrada do
+  // usuário, e imc para armazenar o resultado do cálculo.
+  
+  const [peso, setPeso] = useState('');
+  const [altura, setAltura] = useState('');
+  const [imc, setImc] = useState(null);
+  const [status, setStatus] = useState('');
 
-  const calculateBestFuel = () => {
-    const alcohol = parseFloat(alcoholPrice);
-    const gasoline = parseFloat(gasolinePrice);
-
-    if (!isNaN(alcohol) && !isNaN(gasoline) && gasoline > 0) {
-      const ratio = alcohol / gasoline;
-      if (ratio < 0.7) {
-        setResult('Abasteça com Álcool');
-      } else {
-        setResult('Abasteça com Gasolina');
-      }
-    } else {
-      setResult('Por favor, insira valores válidos.');
-    }
-  };
+  //Função que calcula o IMC
+  const calcularIMC = () => {
+    const alturaMetros = parseFloat(altura) / 100;
+    const imcCalculado = parseFloat(peso) / (alturaMetros * alturaMetros);
+    setImc(imcCalculado.toFixed(2));
+    
+  }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Calculadora de Combustível</Text>
+      {/* Imagem do app */}
+      <Image
+        source={require('./assets/icone_img.png')}
+        style={styles.image}
+      />
+      {/* Titulo do Site */}
+      <Text style={styles.title}>Calculadora de IMC</Text> 
       <TextInput
         style={styles.input}
-        placeholder="Preço do Álcool (R$/L)"
-        keyboardType="numeric"
-        value={alcoholPrice}
-        onChangeText={setAlcoholPrice}
+        // Nome em cinza de "dentro" do text
+        placeholder="Peso (kg)" 
+        // Traz um teclado numérico para inserir o texto
+        keyboardType="numeric" 
+        value={peso}
+        onChangeText={setPeso}
       />
       <TextInput
         style={styles.input}
-        placeholder="Preço da Gasolina (R$/L)"
+        placeholder="Altura (cm)"
         keyboardType="numeric"
-        value={gasolinePrice}
-        onChangeText={setGasolinePrice}
+        value={altura}
+        onChangeText={setAltura}
       />
-      <Button title="Calcular" onPress={calculateBestFuel} />
-      {result ? (
-        <View style={styles.result}>
-          <Text style={styles.resultText}>{result}</Text>
-        </View>
-      ) : null}
+      <Button title="Calcular" onPress={calcularIMC} />
+      {imc && (
+        <Text style={styles.result}>Seu IMC é: {imc}</Text>
+      )}
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -57,8 +60,8 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    textAlign: 'center',
     marginBottom: 16,
+    textAlign: 'center',
   },
   input: {
     height: 40,
@@ -69,11 +72,13 @@ const styles = StyleSheet.create({
   },
   result: {
     marginTop: 16,
-    alignItems: 'center',
-  },
-  resultText: {
     fontSize: 18,
+    textAlign: 'center',
   },
+  image: {
+    width: 200,
+    height: 200,
+    justifyContent: 'center',
+    marginLeft: 105,
+  }
 });
-
-export default App;
