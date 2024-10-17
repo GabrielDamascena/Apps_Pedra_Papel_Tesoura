@@ -1,53 +1,65 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, Button, Image } from 'react-native';
+import { StyleSheet, Text, View, Button, Image } from 'react-native';
 
 export default function App() {
-  // Estado Inicial: Define três estados usando useState:
-  // peso e altura para armazenar os valores de entrada do
-  // usuário, e imc para armazenar o resultado do cálculo.
-  
-  const [peso, setPeso] = useState('');
-  const [altura, setAltura] = useState('');
-  const [imc, setImc] = useState(null);
-  const [status, setStatus] = useState('');
+  const [userEscolha, setUserEscolha] = useState('');
+  const [appEscolha, setAppEscolha] = useState('');
+  const [resultado, setResultado] = useState('');
 
-  //Função que calcula o IMC
-  const calcularIMC = () => {
-    const alturaMetros = parseFloat(altura) / 100;
-    const imcCalculado = parseFloat(peso) / (alturaMetros * alturaMetros);
-    setImc(imcCalculado.toFixed(2));
-    
-  }
+  const Escolhas = ['Pedra', 'Papel', 'Tesoura'];
+
+  const jogar = (userEscolha) => {
+    const appEscolha = Escolhas[Math.floor(Math.random() * Escolhas.length)];
+    setUserEscolha(userEscolha);
+    setAppEscolha(appEscolha);
+    determinarVencedor(userEscolha, appEscolha);
+  };
+
+  const determinarVencedor = (user, app) => {
+    if (user === app) {
+      setResultado('Empate!');
+    } else if (
+      (user === 'Pedra' && app === 'Tesoura') ||
+      (user === 'Papel' && app === 'Pedra') ||
+      (user === 'Tesoura' && app === 'Papel')
+    ) {
+      setResultado('Parabéns, você ganhou!');
+    } else {
+      setResultado('Poxa vida, você perdeu!');
+    }
+  };
+
+  const jogarNovamente = () => {
+    setUserEscolha('');
+    setAppEscolha('');
+    setResultado('');
+  };
 
   return (
     <View style={styles.container}>
-      {/* Imagem do app */}
+       <Text style={styles.titlePrinc}>Pedra, Papel e Tesoura</Text>
       <Image
-        source={require('./assets/icone_img.png')}
+        source={require('./assets/icon_PedraPapelTesoura.png')}
         style={styles.image}
       />
-      {/* Titulo do Site */}
-      <Text style={styles.title}>Calculadora de IMC</Text> 
-      <TextInput
-        style={styles.input}
-        // Nome em cinza de "dentro" do text
-        placeholder="Peso (kg)" 
-        // Traz um teclado numérico para inserir o texto
-        keyboardType="numeric" 
-        value={peso}
-        onChangeText={setPeso}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Altura (cm)"
-        keyboardType="numeric"
-        value={altura}
-        onChangeText={setAltura}
-      />
-      <Button title="Calcular" onPress={calcularIMC} />
-      {imc && (
-        <Text style={styles.result}>Seu IMC é: {imc}</Text>
-      )}
+     
+
+      <Text style={styles.title}>Vamos Jogar?</Text>
+      <Text style={styles.title}>Faça a sua escolha... </Text>
+
+      <View style={styles.escolhasContainer}>
+        {Escolhas.map((Escolhas) => (
+          <Button key={Escolhas} title={Escolhas} onPress={() => jogar(Escolhas)} />
+        ))}
+      </View>
+      {userEscolha ? (
+        <View style={styles.resultadoContainer}>
+          <Text style={styles.TextMinhaEscolha}>Você escolheu: {userEscolha}</Text>
+          <Text style={styles.TextEscolhaApp} >Nós escolhemos: {appEscolha}</Text>
+          <Text style={styles.TextResultado}>{resultado}</Text>
+          <Button title="Jogar Novamente" onPress={jogarNovamente} />
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -56,29 +68,44 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
+    alignItems: 'center',
     padding: 16,
   },
   title: {
     fontSize: 24,
     marginBottom: 16,
-    textAlign: 'center',
   },
-  input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 12,
-    paddingHorizontal: 8,
+  titlePrinc: {
+    fontSize: 30,
+    marginBottom: 30,
+    color: 'green'
   },
-  result: {
-    marginTop: 16,
-    fontSize: 18,
-    textAlign: 'center',
+  TextMinhaEscolha: {
+    fontSize: 20,
+    color: 'orange',
+    fontWeight: 'bold',
+  },
+  TextEscolhaApp: {
+    fontSize: 20,
+    color: 'grey',
+    fontWeight: 'bold',
+  },
+  TextResultado: {
+    fontSize: 20,
+    marginBottom: 15,
+    fontWeight: 'bold',
+  },
+  escolhasContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginBottom: 20,
+  },
+  resultadoContainer: {
+    alignItems: 'center',
   },
   image: {
     width: 200,
     height: 200,
-    justifyContent: 'center',
-    marginLeft: 105,
-  }
+  },
 });
